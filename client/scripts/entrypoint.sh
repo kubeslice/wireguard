@@ -17,10 +17,20 @@ Address = ${ADDRESS}
 ListenPort = ${PORT}
 PrivateKey = ${PRIVATE_KEY}
 MTU = 1300
-PostUp = iptables -A FORWARD -i wg0 -j ACCEPT
-PostUp = iptables -t nat -A POSTROUTING -o eno1 -j MASQUERADE
-PostDown = iptables -D FORWARD -i wg0 -j ACCEPT
-PostDown = iptables -t nat -D POSTROUTING -o eno1 -j MASQUERADE
+PostUp   = sysctl -w net.ipv4.ip_forward=1
+PostUp   = iptables -A FORWARD -i wg0 -o nsm0 -j ACCEPT
+PostUp   = iptables -A FORWARD -i nsm0 -o wg0 -j ACCEPT
+PostUp   = iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+PostUp   = iptables -t nat -A POSTROUTING -o wg0 -j MASQUERADE
+PostUp   = iptables -t nat -A POSTROUTING -o nsm0 -j MASQUERADE
+PostUp = ip route add 10.5.255.0/24 dev wg0 src 10.5.255.2
+
+PostDown = iptables -D FORWARD -i wg0 -o nsm0 -j ACCEPT
+PostDown = iptables -D FORWARD -i nsm0 -o wg0 -j ACCEPT
+PostDown = iptables -D FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+PostDown = iptables -t nat -D POSTROUTING -o wg0 -j MASQUERADE
+PostDown = iptables -t nat -D POSTROUTING -o nsm0 -j MASQUERADE
+PostDown = ip route del 10.5.255.0/24 dev wg0
 
 [Peer]
 PublicKey = ${PEER_PUBLIC_KEY}
