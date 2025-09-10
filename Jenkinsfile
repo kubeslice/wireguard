@@ -1,4 +1,4 @@
-@Library('jenkins-library@opensource-release-multiarch') _
+@Library('ml-library@enterprise-ml-release-ut') _
 dockerImagePipeline(
   script: this,
   services: ['wireguard-server.alpine','wireguard-client.alpine'],
