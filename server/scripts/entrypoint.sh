@@ -21,14 +21,14 @@ PostUp   = sysctl -w net.ipv4.ip_forward=1
 PostUp   = iptables -A FORWARD -i wg0 -o nsm0 -j ACCEPT
 PostUp   = iptables -A FORWARD -i nsm0 -o wg0 -j ACCEPT
 PostUp   = iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
-PostUp   = iptables -t nat -A POSTROUTING -o wg0
-PostUp   = iptables -t nat -A POSTROUTING -o nsm0
+PostUp   = iptables -t nat -A POSTROUTING -o wg0 -j MASQUERADE
+PostUp   = iptables -t nat -A POSTROUTING -o nsm0 -j MASQUERADE
 
 PostDown = iptables -D FORWARD -i wg0 -o nsm0 -j ACCEPT
 PostDown = iptables -D FORWARD -i nsm0 -o wg0 -j ACCEPT
 PostDown = iptables -D FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
-PostDown = iptables -t nat -D POSTROUTING -o wg0
-PostDown = iptables -t nat -D POSTROUTING -o nsm0
+PostDown = iptables -t nat -D POSTROUTING -o wg0 -j MASQUERADE
+PostDown = iptables -t nat -D POSTROUTING -o nsm0 -j MASQUERADE
 
 [Peer]
 PublicKey = ${PEER_PUBLIC_KEY}
