@@ -13,7 +13,6 @@ concurrency:
 env:
   REGISTRY: ghcr.io
 
-
 jobs:
   build:
 
@@ -51,4 +50,4 @@ jobs:
 
       - name: Publish to registry ${{ env.REGISTRY }}
         run: |
-          make docker-push IMAGE_REGISTRY=${{ env.REGISTRY }} TAG=${{ steps.meta.outputs.tags }}
+          make docker-push TAG=${{ steps.meta.outputs.tags }}
